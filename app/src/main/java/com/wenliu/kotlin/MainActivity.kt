@@ -3,6 +3,10 @@ package com.wenliu.kotlin
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.util.TypedValue
+import android.widget.TextView
+import androidx.core.widget.TextViewCompat
+import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
 import com.wenliu.kotlin.databinding.ActivityMainBinding
 import kotlinx.coroutines.delay
@@ -12,18 +16,37 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
 
 class MainActivity : AppCompatActivity() {
+    companion object {
+        @JvmStatic
+        @BindingAdapter("autoTextSize")
+        fun setAutoTextSizeWithMax(textView: TextView, size: Int) {
+            TextViewCompat.setAutoSizeTextTypeWithDefaults(
+                textView,
+                TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM
+            )
+            TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
+                textView,
+                6,
+                size,
+                2,
+                TypedValue.COMPLEX_UNIT_DIP
+            )
+        }
+    }
+
+
     private val TAG = "MainActivity"
     private lateinit var binding: ActivityMainBinding
     private lateinit var user: User
 
-    val demoFlow = flow {
+    private val demoFlow = flow {
         listOf(9, 5, 2, 7).forEach {
             delay(100)
             emit(it)
         }
     }
 
-    val demoFlow2 = flow {
+    private val demoFlow2 = flow {
         listOf("0", "2", "0", "4").forEach {
             delay(200)
             emit(it)
@@ -33,7 +56,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
         runBlocking {
             demoFlow
